@@ -59,7 +59,7 @@ class MongoCollection
     {
         $use_timer = in_array($method, $this->methods_pinba, true);
         if ($use_timer) {
-            $tags = array('group' => 'mongo', 'op' => 'collection::' . $method, 'ns' => $this->db);
+            $tags = array('group' => 'mongo', 'op' => 'collection::' . $method, 'ns' => $this->db . '.' . $this->collection);
             $timer = pinba_timer_start($tags);
         }
         $result = call_user_func_array(array($this->MongoCollection, $method), $args);
