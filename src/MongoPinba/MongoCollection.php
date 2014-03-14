@@ -52,7 +52,11 @@ class MongoCollection
 
     public function find(array $query = array(), array $fields = array())
     {
-        return new MongoCursor($this->MongoClient, "{$this->db}.{$this->collection}", $query, $fields);
+        $tags = array('group' => 'mongo', 'op' => 'collection::find', 'ns' => $this->db . '.' . $this->collection);
+        $timer = pinba_timer_start($tags);
+        $result = new MongoCursor($this->MongoClient, "{$this->db}.{$this->collection}", $query, $fields);
+        pinba_timer_stop($timer);
+        return $result;
     }
 
     public function __call($method, $args)
