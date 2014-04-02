@@ -53,7 +53,7 @@ class MongoCollection
     public function find(array $query = array(), array $fields = array())
     {
         $tags = array('group' => 'mongo', 'op' => 'collection::find', 'ns' => $this->db . '.' . $this->collection);
-        $timer = pinba_timer_start($tags);
+        $timer = pinba_timer_start($tags, array('mongo_query' => $query));
         $result = new MongoCursor($this->MongoClient, "{$this->db}.{$this->collection}", $query, $fields);
         pinba_timer_stop($timer);
         return $result;
@@ -64,7 +64,9 @@ class MongoCollection
         $use_timer = in_array($method, $this->methods_pinba, true);
         if ($use_timer) {
             $tags = array('group' => 'mongo', 'op' => 'collection::' . $method, 'ns' => $this->db . '.' . $this->collection);
-            $timer = pinba_timer_start($tags);
+            $data = array();
+            if ($method === 'findOne') $data['mongo_query'] = $args[0];
+            $timer = pinba_timer_start($tags, $data);
         }
         $result = call_user_func_array(array($this->MongoCollection, $method), $args);
         if ($use_timer) {
